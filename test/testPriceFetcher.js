@@ -1,6 +1,6 @@
 const { BN, constants, expectEvent, expectRevert } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
-const { ZERO_ADDRESS } = constants;
+const utils = require("./../helpers/mathutils");
 
 const PriceFetcher = artifacts.require('PriceFetcher');
 const UniswapV3PoolState = artifacts.require('IUniswapV3PoolState');
@@ -30,6 +30,22 @@ contract('Price Fetcher', function (accounts) {
     // divide this price by 18 and it tells you how much eth you will pay for fei at current prices.
     console.log("current price: ",
       (await priceFetcher.getPrice(WETH_FEI_PAIR)).toString(),
+    );
+  });
+
+  it("is able to get the sqrt of from FEI/ETH pool on uniswap V3", async() => {
+    // divide this price by 18 and it tells you how much eth you will pay for fei at current prices.
+    let sqrtPrice = await utils.getSQRTPriceX96(uniswapV3PoolWETH);
+    console.log("sqrt price: ",
+      utils.x96rootToSquareNum(sqrtPrice).toString()
+    );
+  });
+
+  it("is able to get the sqrt of price from FEI/USDC pool on uniswap V3", async() => {
+    // divide this price by 18 and it tells you how much eth you will pay for fei at current prices.
+    let sqrtPrice = await utils.getSQRTPriceX96(uniswapV3PoolUSDC);
+    console.log("sqrt price: ",
+      utils.x96rootToSquareNum(sqrtPrice).toString()
     );
   });
 });
