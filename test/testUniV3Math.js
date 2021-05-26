@@ -6,6 +6,7 @@ const UniV3Math = artifacts.require('UniV3Math');
 const UniswapV3PoolState = artifacts.require('IUniswapV3PoolState');
 
 const WETH_USDC_PAIR = '0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8';
+const WETH_FEI_PAIR = '0xDc7B403e2e967EaF6c97d79316D285B8A112fDa7';
 
 contract('Price Fetcher', function (accounts) {
   let uniMath;
@@ -14,6 +15,7 @@ contract('Price Fetcher', function (accounts) {
   before(async function () {
     uniMath = await UniV3Math.new(WETH_USDC_PAIR);
     uniswapV3PoolWETHUSDC = await UniswapV3PoolState.at(WETH_USDC_PAIR);
+    uniswapV3PoolWETH = await UniswapV3PoolState.at(WETH_FEI_PAIR);
   });
 
   it("Should get percentage correctly", async() => {
@@ -36,8 +38,11 @@ contract('Price Fetcher', function (accounts) {
   });
     
   it("Should be able to get bottom of range order tick", async() => {
-        
-    console.log("eth price from univ3math: ",
+    console.log("current fei/weth tick: ", 
+        ((await uniswapV3PoolWETH.slot0()).tick).toString()
+    );
+
+    console.log("tick for fei at 80 cents univ3math: ",
         (await uniMath.getBottomOfRangeOrderTick()).toString()
     );
   });
