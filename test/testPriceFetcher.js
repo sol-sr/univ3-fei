@@ -41,6 +41,8 @@ contract('Price Fetcher', function (accounts) {
       utils.x96rootToSquareNum(sqrtPrice).toString()
     ).to.be.equal(
       Math.floor(
+        // we have to divide by 1000 because our x96rootToSquareNum
+        // function isn't able to chop off the last three 0's
         Number(await priceFetcher.getPrice(WETH_FEI_PAIR)) / 1000
       ).toString()
     );
@@ -58,28 +60,4 @@ contract('Price Fetcher', function (accounts) {
       priceFromPriceFetcher.substring(0, priceFromPriceFetcher.length - 8)
     );
   });
-
-  // it("is able to get the sqrt of from FEI/ETH pool on uniswap V3", async() => {
-  //   // divide this price by 18 and it tells you how much eth you will pay for fei at current prices.
-  //   let sqrtPrice = await utils.getSQRTPriceX96(uniswapV3PoolWETH);
-  //   console.log("sqrt price: ",
-  //     utils.x96rootToSquareNum(sqrtPrice).toString()
-  //   );
-  // });
-
-  // it("is able to get the sqrt of price from FEI/USDC pool on uniswap V3", async() => {
-  //   // divide this price by 18 and it tells you how much eth you will pay for fei at current prices.
-  //   let sqrtPrice = await utils.getSQRTPriceX96(uniswapV3PoolUSDC);
-  //   console.log("sqrt price: ",
-  //     utils.x96rootToSquareNum(sqrtPrice).toString()
-  //   );
-  // });
-
-  // it("is able to get the sqrt of price from FEI/USDC pool on uniswap V3", async() => {
-  //   // divide this price by 18 and it tells you how much eth you will pay for fei at current prices.
-  //   let tick = await utils.getTick(uniswapV3PoolWETHUSDC);
-  //   console.log("tick eth fei: ",
-  //     tick.toString()
-  //   );
-  // });
 });

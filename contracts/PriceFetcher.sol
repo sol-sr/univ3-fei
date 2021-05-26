@@ -28,7 +28,7 @@ contract PriceFetcher {
         }
     }
 
-    function getPrice(address _pool) external view returns (uint256) {
+    function getPrice(address _pool) public view returns (uint256) {
         (uint160 sqrtPriceX96, , , , , , ) = IUniswapV3PoolState(_pool).slot0();
         uint256 price = _convertX96toUINT256(uint256(sqrtPriceX96));
         return price;
