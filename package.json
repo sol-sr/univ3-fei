@@ -1,0 +1,6 @@
+{
+    "author": "sol sr",
+    "scripts": {
+      "test": "truffle test --network ganache"
+    }
+  }

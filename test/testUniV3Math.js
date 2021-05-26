@@ -5,17 +5,14 @@ const utils = require("./../helpers/mathutils");
 const UniV3Math = artifacts.require('UniV3Math');
 const UniswapV3PoolState = artifacts.require('IUniswapV3PoolState');
 
-// const WETH_FEI_PAIR = '0xDc7B403e2e967EaF6c97d79316D285B8A112fDa7';
 const WETH_USDC_PAIR = '0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8';
 
 contract('Price Fetcher', function (accounts) {
   let uniMath;
-  let uniswapV3PoolWETH;
   let uniswapV3PoolWETHUSDC;
 
   before(async function () {
     uniMath = await UniV3Math.new(WETH_USDC_PAIR);
-    // uniswapV3PoolWETH = await UniswapV3PoolState.at(WETH_FEI_PAIR);
     uniswapV3PoolWETHUSDC = await UniswapV3PoolState.at(WETH_USDC_PAIR);
   });
 
@@ -24,6 +21,14 @@ contract('Price Fetcher', function (accounts) {
       const value = await uniMath.getXPercent(100, 20);
 
       expect(value.toString()).to.be.equal(expectedValue.toString());
+  });
+
+  it("Should iterate and get all percentages correctly from 1 to 99", async() => {
+    for (let i = 1; i < 100; i++) {
+        const expectedValue = 100 - i;
+        const value = await uniMath.getXPercent(100, i);
+        expect(value.toString()).to.be.equal(expectedValue.toString());
+    }
   });
 
   it("Should be able to get eth price", async() => {
