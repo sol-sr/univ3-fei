@@ -55,9 +55,45 @@ contract('Price Fetcher', function (accounts) {
     let priceFromPriceFetcher = (await priceFetcher.getPrice(WETH_USDC_PAIR)).toString();
     // compare string values to avoid ambiguity around rounding and numbers in javascript
     expect(
-      priceFromUni.substring(0, priceFromUni.length - 5)
+      priceFromUni.substring(0, priceFromUni.length - 6)
     ).to.be.equal(
-      priceFromPriceFetcher.substring(0, priceFromPriceFetcher.length - 8)
+      priceFromPriceFetcher.substring(0, priceFromPriceFetcher.length - 9)
     );
+  });
+
+  it("is able to get the current tick of USDC/FEI/ETH on uniswap V3", async() => {
+    // let priceFromPriceFetcher = (await priceFetcher.getTickFromPool(WETH_USDC_PAIR)).toString();
+    // console.log("priceFromPriceFetcher tick usdc/weth: ", priceFromPriceFetcher);
+
+    let priceFromPriceFetcher = await utils.getSQRTPriceX96(uniswapV3PoolWETH);
+    console.log("fei/weth price X96: ", priceFromPriceFetcher.toString());
+
+    priceFromPriceFetcher = (await priceFetcher.getTickFromPool(WETH_FEI_PAIR)).toString();
+    console.log("tick from pool: ", priceFromPriceFetcher)
+    priceFromPriceFetcher = await priceFetcher.getX96PriceFromTick(Number(priceFromPriceFetcher.toString()));
+    console.log("priceFromPriceFetcher tick fei/weth: ", priceFromPriceFetcher);
+  });
+
+  it("is able to get the current price of USDC/FEI/ETH on uniswap V3", async() => {
+    let priceFromPriceFetcher = (await priceFetcher.getPrice(WETH_USDC_PAIR)).toString();
+    // console.log("priceFromPriceFetcher price usdc/weth: ", priceFromPriceFetcher);
+
+    priceFromPriceFetcher = (await priceFetcher.getPrice(WETH_FEI_PAIR)).toString();
+    // console.log("priceFromPriceFetcher price fei/weth: ", priceFromPriceFetcher);
+  });
+
+  it("is able to get the current x96 square root price of USDC/FEI/ETH on uniswap V3", async() => {
+    let priceFromPriceFetcher = await utils.getSQRTPriceX96(uniswapV3PoolWETHUSDC);
+    console.log("priceFromPriceFetcher price usdc/weth: ", priceFromPriceFetcher.toString());
+
+    priceFromPriceFetcher = await utils.getSQRTPriceX96(uniswapV3PoolWETH);
+    console.log("priceFromPriceFetcher price fei/weth: ", priceFromPriceFetcher.toString());
+  });
+
+  it("tick proof getSQRTPriceX96 to getX96PriceFromTick", async() => {
+    let priceFromPriceFetcher = await utils.getSQRTPriceX96(uniswapV3PoolWETHUSDC);
+    priceFromPriceFetcher = await priceFetcher.getX96PriceFromTick(priceFromPriceFetcher.toString);
+
+    console.log("usdc/weth price X96: ", priceFromPriceFetcher.toString());
   });
 });

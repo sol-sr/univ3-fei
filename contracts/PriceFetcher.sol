@@ -1,6 +1,7 @@
 pragma solidity 0.8.0;
 
 import "./External/Interfaces/IUniswapV3PoolState.sol";
+import "./External/Univ3Libs/TickMath.sol";
 
 contract PriceFetcher {
 
@@ -33,4 +34,23 @@ contract PriceFetcher {
         uint256 price = _convertX96toUINT256(uint256(sqrtPriceX96));
         return price;
     }
+
+    function getTickFromPool(address _pool) public view returns (int24) {
+        (uint160 sqrtPriceX96, int24 tick, , , , , ) = IUniswapV3PoolState(_pool).slot0();
+        return tick;
+    }
+
+    function tickFromSqrtRatio(uint160 sqrtPriceX96) public pure returns (int24 tick) {
+        return TickMath.getTickAtSqrtRatio(sqrtPriceX96);
+    }
+
+    function getX96PriceFromTick(int24 tick) public pure returns(uint160) {
+        return TickMath.getSqrtRatioAtTick(tick);
+    }
+
+    function getActualPriceFromTick(int24 tick) public pure returns(uint256) {
+        return _convertX96toUINT256(
+            getX96PriceFromTick(tick)
+        );
+    }    
 }

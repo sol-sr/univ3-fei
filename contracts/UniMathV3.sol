@@ -9,6 +9,7 @@ contract UniV3Math is PriceFetcher {
     using Babylonian for uint256;
 
     constructor(address _wethusdc) {
+        // we will use weth/usdc uniswap pair on univ3 as our price oracle
         wethUSDCPoolAddress = _wethusdc;
     }
 
@@ -29,11 +30,32 @@ contract UniV3Math is PriceFetcher {
 
     // this function should return the tick that represents 80 cents in the FEI/ETH pair
     function getBottomOfRangeOrderTick() public view returns(int24) {
-        uint256 currentEthPrice = getEthPrice() * 1e12;
-        uint256 actualBuyPrice = getXPercent(currentEthPrice, 20);
+        uint256 currentEthPrice = getEthPrice() / 1e12;
+        // you get 15% more eth per FEI at a 15% discount
+        uint256 actualBuyPrice = getXPercent(currentEthPrice, 15);
+        uint256 sqrtPrice = actualBuyPrice.sqrt();
+        // shift left 96 bits to create X64.96
+        uint256 sqrtPriceX96 = sqrtPrice << 96;
+
+        return TickMath.getTickAtSqrtRatio(uint160(sqrtPriceX96));
+    }
+
+    // this function should return the tick that represents 80 cents in the FEI/ETH pair
+    function getBottomOfRangeOrderTickPercentDiff(uint256 num) public view returns(int24) {
+        require(num < 100 && num > 0);
+
+        uint256 currentEthPrice = getEthPrice() / 1e12;
+        // you get 15% more eth per FEI at a 15% discount
+        uint256 actualBuyPrice = getXPercent(currentEthPrice, num);
         uint256 sqrtPrice = actualBuyPrice.sqrt();
         uint256 sqrtPriceX96 = sqrtPrice << 96;
 
         return TickMath.getTickAtSqrtRatio(uint160(sqrtPriceX96));
+    }
+
+    function getSqrtFromPrice(uint256 price) public view returns (uint256) {
+        uint256 sqrtPrice = price.sqrt();
+
+        return sqrtPrice;
     }
 }
