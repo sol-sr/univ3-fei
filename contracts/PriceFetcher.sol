@@ -44,8 +44,8 @@ contract PriceFetcher {
         return TickMath.getTickAtSqrtRatio(sqrtPriceX96);
     }
 
-    function getX96PriceFromTick(int24 tick) public pure returns(uint160) {
-        return TickMath.getSqrtRatioAtTick(tick);
+    function getX96PriceFromTick(int24 tick) public pure returns(uint256) {
+        return uint256(TickMath.getSqrtRatioAtTick(tick));
     }
 
     function getActualPriceFromTick(int24 tick) public pure returns(uint256) {
